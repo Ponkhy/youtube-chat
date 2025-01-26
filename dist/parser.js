@@ -145,6 +145,9 @@ function rendererFromAction(action) {
         const parentRenderer = item.liveChatSponsorshipsGiftPurchaseAnnouncementRenderer;
         return Object.assign({ id: parentRenderer.id, timestampUsec: parentRenderer.timestampUsec, authorExternalChannelId: parentRenderer.authorExternalChannelId }, parentRenderer.header.liveChatSponsorshipsHeaderRenderer);
     }
+    else if (item.liveChatSponsorshipsGiftRedemptionAnnouncementRenderer) {
+        return item.liveChatSponsorshipsGiftRedemptionAnnouncementRenderer;
+    }
     else if (item.LiveChatMembershipMilestoneRenderer) {
         return item.LiveChatMembershipMilestoneRenderer;
     }
