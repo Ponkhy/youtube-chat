@@ -1,6 +1,6 @@
 import { FetchOptions, GetLiveChatResponse } from "./types/yt-response.js";
 import { ChatItem } from "./types/data.js";
-export declare function getOptionsFromLivePage(data: string, chatType?: boolean): FetchOptions & {
+export declare function getOptionsFromLivePage(data: string): FetchOptions & {
     liveId: string;
 };
 /** Convert get_live_chat response */

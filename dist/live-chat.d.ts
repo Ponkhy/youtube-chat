@@ -13,7 +13,7 @@ declare const LiveChat_base: new () => TypedEmitter<LiveChatEvents>;
 export declare class LiveChat extends LiveChat_base {
     #private;
     liveId?: string;
-    constructor(id: YoutubeId, chatType?: boolean, interval?: number);
+    constructor(id: YoutubeId, interval?: number);
     start(): Promise<boolean>;
     stop(reason?: string): void;
 }

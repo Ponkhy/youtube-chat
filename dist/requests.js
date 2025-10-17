@@ -25,14 +25,14 @@ export function fetchChat(options) {
         return parseChatData(res.data);
     });
 }
-export function fetchLivePage(id, chatType) {
+export function fetchLivePage(id) {
     return __awaiter(this, void 0, void 0, function* () {
         const url = generateLiveUrl(id);
         if (!url) {
             throw TypeError("not found id");
         }
         const res = yield axios.get(url);
-        return getOptionsFromLivePage(res.data.toString(), chatType);
+        return getOptionsFromLivePage(res.data.toString());
     });
 }
 function generateLiveUrl(id) {

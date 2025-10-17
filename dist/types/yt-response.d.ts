@@ -163,6 +163,11 @@ export interface LiveChatSponsorshipsGiftPurchaseAnnouncementRenderer {
         liveChatSponsorshipsHeaderRenderer: LiveChatSponsorshipsHeaderRenderer;
     };
 }
+export interface liveChatSponsorshipsGiftRedemptionAnnouncementRenderer extends MessageRendererBase {
+    message: {
+        runs: MessageRun[];
+    };
+}
 export interface LiveChatSponsorshipsHeaderRenderer {
     primaryText: {
         runs: MessageRun[];
@@ -203,6 +208,7 @@ export interface AddChatItemAction {
         liveChatMembershipItemRenderer?: LiveChatMembershipItemRenderer;
         liveChatPaidStickerRenderer?: LiveChatPaidStickerRenderer;
         liveChatSponsorshipsGiftPurchaseAnnouncementRenderer?: LiveChatSponsorshipsGiftPurchaseAnnouncementRenderer;
+        liveChatSponsorshipsGiftRedemptionAnnouncementRenderer?: liveChatSponsorshipsGiftRedemptionAnnouncementRenderer;
         LiveChatMembershipMilestoneRenderer?: LiveChatMembershipMilestoneRenderer;
         liveChatViewerEngagementMessageRenderer?: object;
     };
