@@ -20,10 +20,10 @@ export class LiveChat extends (EventEmitter as new () => TypedEmitter<LiveChatEv
   #options?: FetchOptions
   readonly #interval: number = 1000
   readonly #id: YoutubeId
-  readonly #chatType: boolean = false
 
-  constructor(id: YoutubeId, chatType = false, interval = 1000) {
+  constructor(id: YoutubeId, interval = 1000) {
     super()
+
     if (!id || (!("channelId" in id) && !("liveId" in id) && !("handle" in id))) {
       throw TypeError("Required channelId or liveId or handle.")
     } else if ("liveId" in id) {
@@ -32,23 +32,25 @@ export class LiveChat extends (EventEmitter as new () => TypedEmitter<LiveChatEv
 
     this.#id = id
     this.#interval = interval
-    this.#chatType = chatType
   }
 
   async start(): Promise<boolean> {
     try {
-      const options = await fetchLivePage(this.#id, this.#chatType)
+      const options = await fetchLivePage(this.#id)
+
       if (this.#observer && this.liveId == options.liveId) {
         return false
       } else if (this.#observer && this.liveId != options.liveId) {
         this.stop("liveID is changed")
       }
+
       this.liveId = options.liveId
       this.#options = options
 
       this.#observer = setInterval(() => this.#execute(), this.#interval)
 
       this.emit("start", this.liveId)
+
       return true
     } catch (err) {
       this.emit("error", err)
@@ -59,7 +61,9 @@ export class LiveChat extends (EventEmitter as new () => TypedEmitter<LiveChatEv
   stop(reason?: string) {
     if (this.#observer) {
       clearInterval(this.#observer)
+
       this.#observer = undefined
+
       this.emit("end", reason)
     }
   }
@@ -67,13 +71,16 @@ export class LiveChat extends (EventEmitter as new () => TypedEmitter<LiveChatEv
   async #execute() {
     if (!this.#options) {
       const message = "Not found options"
+
       this.emit("error", new Error(message))
       this.stop(message)
+
       return
     }
 
     try {
       const [chatItems, continuation] = await fetchChat(this.#options)
+
       chatItems.forEach((chatItem) => this.emit("chat", chatItem))
 
       this.#options.continuation = continuation
@@ -82,4 +89,3 @@ export class LiveChat extends (EventEmitter as new () => TypedEmitter<LiveChatEv
     }
   }
 }
-

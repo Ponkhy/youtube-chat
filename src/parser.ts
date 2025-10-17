@@ -14,9 +14,12 @@ import {
   TimeoutChatItemAction,
 } from "./types/yt-response.js"
 import { ChatItem, ImageItem, MessageItem } from "./types/data.js"
-export function getOptionsFromLivePage(data: string, chatType?: boolean): FetchOptions & { liveId: string } {
+
+export function getOptionsFromLivePage(data: string): FetchOptions & { liveId: string } {
   let liveId: string
+
   const idResult = data.match(/<link rel="canonical" href="https:\/\/www.youtube.com\/watch\?v=(.+?)">/)
+
   if (idResult) {
     liveId = idResult[1]
   } else {
@@ -50,16 +53,11 @@ export function getOptionsFromLivePage(data: string, chatType?: boolean): FetchO
   }
 
   let continuation: string | undefined
-  const continuationResult = data.matchAll(/['"]continuation['"]:\s*['"](.+?)['"]/g)
-  const list = Array.from(continuationResult)
 
-  // Ensure that the required index exists before accessing it
-  if (chatType && list.length > 2 && list[2]?.[1]) {
-    /** CONTINUATION to be used when retrieving all chats. */
-    continuation = list[2][1]
-  } else if (list.length > 1 && list[1]?.[1]) {
-    /** CONTINUATION to be used when retrieving the top chat. */
-    continuation = list[1][1]
+  const match = data.match(/"continuation":"([^"]+)"/)
+
+  if (match && match[1]) {
+    continuation = match[1]
   }
 
   if (!continuation) {
@@ -77,6 +75,7 @@ export function getOptionsFromLivePage(data: string, chatType?: boolean): FetchO
 /** Convert get_live_chat response */
 export function parseChatData(data: GetLiveChatResponse): [ChatItem[], string] {
   let chatItems: ChatItem[] = []
+
   if (data.continuationContents.liveChatContinuation.actions) {
     chatItems = data.continuationContents.liveChatContinuation.actions
       .map((v) => parseActionToChatItem(v))
@@ -84,7 +83,9 @@ export function parseChatData(data: GetLiveChatResponse): [ChatItem[], string] {
   }
 
   const continuationData = data.continuationContents.liveChatContinuation.continuations[0]
+
   let continuation = ""
+
   if (continuationData.invalidationContinuationData) {
     continuation = continuationData.invalidationContinuationData.continuation
   } else if (continuationData.timedContinuationData) {
@@ -97,6 +98,7 @@ export function parseChatData(data: GetLiveChatResponse): [ChatItem[], string] {
 /** Converting a Thumbnail object to an ImageItem. */
 function parseThumbnailToImageItem(data: Thumbnail[], alt: string): ImageItem {
   const thumbnail = data.pop()
+
   if (thumbnail) {
     return {
       url: thumbnail.url,
@@ -124,6 +126,7 @@ function parseMessages(runs: MessageRun[]): MessageItem[] {
       const thumbnail = run.emoji.image.thumbnails.shift()
       const isCustomEmoji = Boolean(run.emoji.isCustomEmoji)
       const shortcut = run.emoji.shortcuts ? run.emoji.shortcuts[0] : ""
+
       return {
         url: thumbnail ? thumbnail.url : "",
         alt: shortcut,
@@ -230,6 +233,7 @@ function parseActionToChatItem(data: Action): ChatItem | RemoveChatItemAction | 
   }
 
   let message: MessageRun[] = []
+
   if ("message" in messageRenderer) {
     message = messageRenderer.message.runs
   } else if ("empty" in messageRenderer) {
@@ -257,6 +261,7 @@ function parseActionToChatItem(data: Action): ChatItem | RemoveChatItemAction | 
   if (messageRenderer.authorBadges) {
     for (const entry of messageRenderer.authorBadges) {
       const badge = entry.liveChatAuthorBadgeRenderer
+
       if (badge.customThumbnail) {
         ret.author.badge = {
           thumbnail: parseThumbnailToImageItem(badge.customThumbnail.thumbnails, badge.tooltip),
