@@ -18,21 +18,20 @@ var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (
     if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
     return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
 };
-var _LiveChat_instances, _LiveChat_observer, _LiveChat_options, _LiveChat_interval, _LiveChat_id, _LiveChat_chatType, _LiveChat_execute;
+var _LiveChat_instances, _LiveChat_observer, _LiveChat_options, _LiveChat_interval, _LiveChat_id, _LiveChat_execute;
 import { EventEmitter } from "node:events";
 import { fetchChat, fetchLivePage } from "./requests.js";
 /**
  * YouTube live chat acquisition event
  */
 export class LiveChat extends EventEmitter {
-    constructor(id, chatType = false, interval = 1000) {
+    constructor(id, interval = 1000) {
         super();
         _LiveChat_instances.add(this);
         _LiveChat_observer.set(this, void 0);
         _LiveChat_options.set(this, void 0);
         _LiveChat_interval.set(this, 1000);
         _LiveChat_id.set(this, void 0);
-        _LiveChat_chatType.set(this, false);
         if (!id || (!("channelId" in id) && !("liveId" in id) && !("handle" in id))) {
             throw TypeError("Required channelId or liveId or handle.");
         }
@@ -41,12 +40,11 @@ export class LiveChat extends EventEmitter {
         }
         __classPrivateFieldSet(this, _LiveChat_id, id, "f");
         __classPrivateFieldSet(this, _LiveChat_interval, interval, "f");
-        __classPrivateFieldSet(this, _LiveChat_chatType, chatType, "f");
     }
     start() {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                const options = yield fetchLivePage(__classPrivateFieldGet(this, _LiveChat_id, "f"), __classPrivateFieldGet(this, _LiveChat_chatType, "f"));
+                const options = yield fetchLivePage(__classPrivateFieldGet(this, _LiveChat_id, "f"));
                 if (__classPrivateFieldGet(this, _LiveChat_observer, "f") && this.liveId == options.liveId) {
                     return false;
                 }
@@ -73,7 +71,7 @@ export class LiveChat extends EventEmitter {
         }
     }
 }
-_LiveChat_observer = new WeakMap(), _LiveChat_options = new WeakMap(), _LiveChat_interval = new WeakMap(), _LiveChat_id = new WeakMap(), _LiveChat_chatType = new WeakMap(), _LiveChat_instances = new WeakSet(), _LiveChat_execute = function _LiveChat_execute() {
+_LiveChat_observer = new WeakMap(), _LiveChat_options = new WeakMap(), _LiveChat_interval = new WeakMap(), _LiveChat_id = new WeakMap(), _LiveChat_instances = new WeakSet(), _LiveChat_execute = function _LiveChat_execute() {
     return __awaiter(this, void 0, void 0, function* () {
         if (!__classPrivateFieldGet(this, _LiveChat_options, "f")) {
             const message = "Not found options";

@@ -7,6 +7,6 @@ export declare function fetchLivePage(id: {
     liveId: string;
 } | {
     handle: string;
-}, chatType?: boolean): Promise<FetchOptions & {
+}): Promise<FetchOptions & {
     liveId: string;
 }>;

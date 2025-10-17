@@ -1,5 +1,4 @@
-export function getOptionsFromLivePage(data, chatType) {
-    var _a, _b;
+export function getOptionsFromLivePage(data) {
     let liveId;
     const idResult = data.match(/<link rel="canonical" href="https:\/\/www.youtube.com\/watch\?v=(.+?)">/);
     if (idResult) {
@@ -33,16 +32,9 @@ export function getOptionsFromLivePage(data, chatType) {
         throw new Error("Client Version was not found");
     }
     let continuation;
-    const continuationResult = data.matchAll(/['"]continuation['"]:\s*['"](.+?)['"]/g);
-    const list = Array.from(continuationResult);
-    // Ensure that the required index exists before accessing it
-    if (chatType && list.length > 2 && ((_a = list[2]) === null || _a === void 0 ? void 0 : _a[1])) {
-        /** CONTINUATION to be used when retrieving all chats. */
-        continuation = list[2][1];
-    }
-    else if (list.length > 1 && ((_b = list[1]) === null || _b === void 0 ? void 0 : _b[1])) {
-        /** CONTINUATION to be used when retrieving the top chat. */
-        continuation = list[1][1];
+    const match = data.match(/"continuation":"([^"]+)"/);
+    if (match && match[1]) {
+        continuation = match[1];
     }
     if (!continuation) {
         throw new Error("Continuation was not found");
